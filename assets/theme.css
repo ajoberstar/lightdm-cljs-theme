@@ -8,23 +8,34 @@ header {
     background-color: #2b2b2b;
     color: #ededed;
     padding: 0.5em;
-    height: 1em;
+    height: 3em;
+}
+
+header div {
+    position: relative;
 }
 
 #logo {
     float: left;
 }
 
+#logo img {
+   height: 3em;
+}
+
 #time {
     float: right;
 }
 
-#content {
-    position: fixed;
+.vertical-align {
     top: 50%;
     left: 0;
     right: 0;
     transform: translateY(-50%);
+}
+
+#content {
+    position: fixed;
 }
 
 #content, footer {
@@ -32,10 +43,10 @@ header {
 }
 
 img#userimage {
-    width: 15%;
-    height: 15%;
+    width: 20%;
+    height: 20%;
     border-radius: 50%;
-    border: 5px solid black;
+    border: 0.125em solid #2b2b2b;
 }
 
 form#login {
