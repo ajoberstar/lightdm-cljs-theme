@@ -27,6 +27,28 @@
          {:target (. js/document (getElementById "time"))})
 
 
+(def sessions-state (atom {:active-session nil
+                           :sessions []}))
+
+(->> (js->clj (. js/lightdm -sessions) :keywordize-keys true)
+     (swap! sessions-state assoc :sessions))
+
+(swap! sessions-state assoc :active-session (. js/lightdm -default-session))
+
+(defn sessions-view [{:keys [active-session sessions]}]
+  (reify om/IRender
+    (render [_]
+      (apply dom/select nil
+             (map (fn [{:keys [key name]}]
+                    (if (= key (:key active-session))
+                      (dom/option #js {:value key :selected true} (str name))
+                      (dom/option #js {:value key} (str name))))
+                  sessions)))))
+
+(om/root sessions-view
+         sessions-state
+         {:target (. js/document (getElementById "sessions"))})
+
 (def users-state (atom {:active-user nil
                        :users []}))
 
