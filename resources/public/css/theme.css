@@ -19,7 +19,7 @@ header, footer {
     float: right;
 }
 
-#content {
+#users {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
@@ -28,11 +28,22 @@ header, footer {
     text-align: center;
 }
 
-img#userimage {
-    width: 25%;
-    height: 25%;
+img.avatar {
+    width: 10%;
+    height: 10%;
     border-radius: 50%;
     border: 0.125em solid #efefef;
+    margin: 1em;
+}
+
+img.avatar:hover {
+    width: 15%;
+    height: 15%;
+}
+
+img.avatar.selected {
+    width: 20%;
+    height: 20%;
 }
 
 input {

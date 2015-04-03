@@ -27,6 +27,27 @@
          {:target (. js/document (getElementById "time"))})
 
 
-(def user-state (atom {:active-user nil
+(def users-state (atom {:active-user nil
                        :users []}))
 
+(->> (js->clj (. js/lightdm -users) :keywordize-keys true)
+     (map (fn [user] (if (-> user :image seq)
+                       user
+                       (assoc user :image "/img/unknown.svg"))))
+     (swap! users-state assoc :users))
+
+(defn inactive-user-view [user]
+  (reify om/IRender
+    (render [_]
+      (dom/img #js {:className "avatar"
+                    :src (:image user)}
+               nil))))
+
+(defn users-view [{:keys [active-user users]} _]
+  (reify om/IRender
+    (render [_]
+      (apply dom/div nil (om/build-all inactive-user-view users)))))
+
+(om/root users-view
+         users-state
+         {:target (. js/document (getElementById "users"))})
