@@ -38,17 +38,8 @@ header, footer {
     width: 12.5%;
 }
 
-.username {
-    display: none;
-}
-
-.user:hover {
-    height: 15%;
-    width: 15%;
-}
-
-.user:hover .username {
-    display: inline;
+.user:hover img.avatar {
+    border-radius: 5%;
 }
 
 img.avatar {
