@@ -1,0 +1,59 @@
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+header {
+    background-color: #2b2b2b;
+    color: #ededed;
+    padding: 0.5em;
+    height: 1em;
+}
+
+#logo {
+    float: left;
+}
+
+#time {
+    float: right;
+}
+
+#content {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+#content, footer {
+    text-align: center;
+}
+
+img#userimage {
+    width: 15%;
+    height: 15%;
+    border-radius: 50%;
+    border: 5px solid black;
+}
+
+form#login {
+    display: none;
+}
+
+input {
+    border: 1px solid;
+    border-radius: 0.25em;
+}
+
+footer {
+    position: fixed;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+}
+
+footer button {
+    min-width: 7.5em;
+}

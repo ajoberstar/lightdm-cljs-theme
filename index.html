@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="assets/theme.css">
+        <script type="text/javascript" src="assets/mock.js"></script>
+        <script type="text/javascript" src="assets/theme.js"></script>
+    </head>
+    <body>
+        <header>
+            <div id="logo">Logo</div>
+            <div id="time">Time</div>
+        </header>
+        <div id="content">
+            <div id="user">
+                <img id="userimage" src=""></img>
+                <span id="username"></span>
+            </div>
+            <form id="login" action="javascript: login()">
+                <input id="password" type="password" placehold="Password"></input>
+            </form> 
+        </div>
+        <footer>
+            <button onclick="lightdm.restart()">Restart</button>
+            <button onclick="lightdm.shutdown()">Shutdown</button>
+        </footer>
+        <script type="text/javascript">
+            init();
+        </script>
+    </body>
+</html>
