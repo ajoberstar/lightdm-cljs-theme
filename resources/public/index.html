@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="assets/theme.css">
-        <script type="text/javascript" src="assets/mock.js"></script>
-        <script type="text/javascript" src="assets/theme.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/theme.css">
+        <script type="text/javascript" src="/js/mock.js"></script>
+        <script type="text/javascript" src="/js/theme.js"></script>
     </head>
     <body>
         <header>
@@ -20,13 +20,14 @@
         </div>
         <footer>
             <div class="left">
-                <img id="logo" src="assets/arch-linux.svg">
+                <img id="logo" src="/img/arch-linux.svg">
             </div>
             <div class="right">
                 <button onclick="lightdm.restart()">Restart</button>
                 <button onclick="lightdm.shutdown()">Shutdown</button>
             </div>
         </footer>
+        <script type="text/javascript" src="/js/main.js"></script>
         <script type="text/javascript">
             init();
         </script>
