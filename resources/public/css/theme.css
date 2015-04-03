@@ -38,6 +38,10 @@ header, footer {
     width: 12.5%;
 }
 
+.user span {
+    display: block;
+}
+
 .user:hover img.avatar {
     border-radius: 5%;
 }

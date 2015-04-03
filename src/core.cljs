@@ -58,7 +58,18 @@
                        (assoc user :image "/img/unknown.svg"))))
      (swap! users-state assoc :users))
 
+;; (swap! users-state assoc :active-user (-> @users-state :users first))
+
 (defn inactive-user-view [user]
+  (reify om/IRender
+    (render [_]
+      (dom/div #js {:className "user"}
+               (dom/img #js {:className "avatar"
+                             :src (:image user)}
+                        nil)
+               (dom/span #js {:className "username"} (str (:display_name user)))))))
+
+(defn active-user-view [user]
   (reify om/IRender
     (render [_]
       (dom/div #js {:className "user"}
@@ -70,8 +81,10 @@
 (defn users-view [{:keys [active-user users]} _]
   (reify om/IRender
     (render [_]
-      (apply dom/div #js {:id "users"}
-             (om/build-all inactive-user-view users)))))
+      (if active-user
+        (dom/div #js {:id "users"} (om/build active-user-view active-user))
+        (apply dom/div #js {:id "users"}
+               (om/build-all inactive-user-view users))))))
 
 (om/root users-view
          users-state
