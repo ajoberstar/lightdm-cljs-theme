@@ -19,36 +19,45 @@ header, footer {
     float: right;
 }
 
-#users {
+#container {
     position: fixed;
+    height: 100%;
+    width: 100%;
+}
+
+#users {
+    position: relative;
     top: 50%;
     transform: translateY(-50%);
-    left: 0;
-    right: 0;
     text-align: center;
 }
 
+.user {
+    display: inline-block;
+    height: 12.5%;
+    width: 12.5%;
+}
+
+.username {
+    display: none;
+}
+
+.user:hover {
+    height: 15%;
+    width: 15%;
+}
+
+.user:hover .username {
+    display: inline;
+}
+
 img.avatar {
-    width: 10%;
-    height: 10%;
+    position: relative;
+    display: inline-block;
+    width: 90%;
+    height: 90%;
     border-radius: 50%;
     border: 0.125em solid #efefef;
-    margin: 1em;
-}
-
-img.avatar:hover {
-    width: 15%;
-    height: 15%;
-}
-
-img.avatar.selected {
-    width: 20%;
-    height: 20%;
-}
-
-input {
-    border: 1px solid;
-    border-radius: 0.25em;
 }
 
 footer {

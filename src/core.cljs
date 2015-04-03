@@ -61,15 +61,18 @@
 (defn inactive-user-view [user]
   (reify om/IRender
     (render [_]
-      (dom/img #js {:className "avatar"
-                    :src (:image user)}
-               nil))))
+      (dom/div #js {:className "user"}
+               (dom/img #js {:className "avatar"
+                             :src (:image user)}
+                        nil)
+               (dom/span #js {:className "username"} (str (:display_name user)))))))
 
 (defn users-view [{:keys [active-user users]} _]
   (reify om/IRender
     (render [_]
-      (apply dom/div nil (om/build-all inactive-user-view users)))))
+      (apply dom/div #js {:id "users"}
+             (om/build-all inactive-user-view users)))))
 
 (om/root users-view
          users-state
-         {:target (. js/document (getElementById "users"))})
+         {:target (. js/document (getElementById "container"))})
