@@ -7,10 +7,9 @@
     </head>
     <body>
         <header>
-            <div id="logo" class="vertical-align"><img src="assets/arch-linux.svg"></div>
-            <div id="time" class="vertical-align">Time</div>
+            <div id="time" class="right">Time</div>
         </header>
-        <div id="content" class="vertical-align">
+        <div id="content">
             <div id="user">
                 <img id="userimage" src=""></img>
                 <span id="username"></span>
@@ -20,8 +19,13 @@
             </form> 
         </div>
         <footer>
-            <button onclick="lightdm.restart()">Restart</button>
-            <button onclick="lightdm.shutdown()">Shutdown</button>
+            <div class="left">
+                <img id="logo" src="assets/arch-linux.svg">
+            </div>
+            <div class="right">
+                <button onclick="lightdm.restart()">Restart</button>
+                <button onclick="lightdm.shutdown()">Shutdown</button>
+            </div>
         </footer>
         <script type="text/javascript">
             init();
