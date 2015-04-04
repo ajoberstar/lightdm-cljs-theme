@@ -1,13 +1,19 @@
 (ns org.ajoberstar.lightdm.core
   (:require [om.core :as om]
-            [om.dom :as dom]))
+            [om.dom :as dom]
+            [cljs-time.local :as time]
+            [cljs-time.format :as format]))
 
 (enable-console-print!)
+
+(def clock-format (format/formatter "yyyy-MM-dd hh:mm:ss A"))
 
 (def clock-state (atom {}))
 
 (defn- tick []
-  (swap! clock-state assoc :time (js/Date.)))
+  (->> (time/local-now)
+       (format/unparse clock-format)
+       (swap! clock-state assoc :time)))
 
 (defn clock-view [{:keys [time interval-id]} _]
   (reify

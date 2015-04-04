@@ -9,6 +9,7 @@
                  ;;js
                  [org.clojure/clojurescript "0.0-3058"]
                  [org.omcljs/om "0.8.8"]
+                 [com.andrewmcveigh/cljs-time "0.3.3"]
                  [figwheel "0.2.5"]]
   :resource-paths ["resources" "target/resources"]
   :target-path "target/%s"
