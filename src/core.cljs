@@ -32,9 +32,8 @@
          clock-state
          {:target (. js/document (getElementById "time"))})
 
-(let [lightdm (js/lightdm)
-      sessions (-> lightdm .-sessions (js->clj :keywordize-keys true))
-      active (-> lightdm .-default-session (js->clj :keywordize-keys true))]
+(let [sessions (-> (. js/lightdm -sessions) (js->clj :keywordize-keys true))
+      active (-> (. js/lightdm -default-session) (js->clj :keywordize-keys true))]
   (def sessions-state (atom {:active-session active
                              :sessions sessions})))
 
@@ -54,16 +53,12 @@
          sessions-state
          {:target (. js/document (getElementById "sessions"))})
 
-(def users-state (atom {:active-user nil
-                       :users []}))
+(defn- user-defaults [user]
+  (update user :image (fn [img] (if (seq img) img "/img/unknown.svg"))))
 
-(->> (js->clj (. js/lightdm -users) :keywordize-keys true)
-     (map (fn [user] (if (-> user :image seq)
-                       user
-                       (assoc user :image "/img/unknown.svg"))))
-     (swap! users-state assoc :users))
-
-;; (swap! users-state assoc :active-user (-> @users-state :users first))
+(let [users (-> (. js/lightdm -users) (js->clj :keywordize-keys true))]
+  (def users-state (atom {:active-user nil 
+                          :users (map user-defaults users)})))
 
 (defn inactive-user-view [user]
   (reify om/IRender
