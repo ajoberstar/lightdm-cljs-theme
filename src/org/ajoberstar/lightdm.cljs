@@ -50,12 +50,13 @@
   (def users-db (reagent/atom {:active-user nil
                                :users (map user-defaults users)})))
 
-(defn user-component [user]
-  [:div {:class "user"}
-   [:img {:class "avatar"
-          :src (:image user)
-          :on-click #(swap! users-db update :active-user (fn [current-active] (if current-active nil user)))}]
-   [:span {:class "username"} (:display_name user)]])
+(defn user-component [{:keys [display_name image name] :as user}]
+  ^{:key name} [:div {:class "user"}
+                [:img {:class "avatar"
+                       :src image
+                       :on-click #(swap! users-db update :active-user (fn [current-active]
+                                                                        (if current-active nil user)))}]
+                [:span {:class "username"} display_name]])
 
 (defn users-component []
   (let [{:keys [active-user users]} @users-db]
