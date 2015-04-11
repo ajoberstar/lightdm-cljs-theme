@@ -41,3 +41,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User component
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- user-defaults [user]
+  (if (seq (:image user))
+    user
+    (assoc user :image "/img/unknown.svg")))
+
+(let [users (-> (. js/lightdm -users) (js->clj :keywordize-keys true))]
+  (def users-db (reagent/atom {:active-user nil
+                               :users (map user-defaults users)})))
+
+(defn user-component [user]
+  [:div {:class "user"}
+   [:img {:class "avatar"
+          :src (:image user)
+          :on-click #(swap! users-db update :active-user (fn [current-active] (if current-active nil user)))}]
+   [:span {:class "username"} (:display_name user)]])
+
+(defn users-component []
+  (let [{:keys [active-user users]} @users-db]
+    [:div {:id "users"}
+     (if active-user
+       [user-component active-user]
+       (map user-component users))]))
+
+(reagent/render [users-component] (js/document.getElementById "container"))
