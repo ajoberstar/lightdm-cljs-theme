@@ -6,17 +6,17 @@
     </head>
     <body>
         <header>
-            <div id="sessions" class="left"></div>
             <div id="time" class="right">Time</div>
+            <div id="sessions"></div>
         </header>
         <div id="container"></div>
         <footer>
-            <div class="left">
-                <img id="logo" src="/img/arch-linux.svg">
-            </div>
             <div class="right">
                 <button onclick="lightdm.restart()">Restart</button>
                 <button onclick="lightdm.shutdown()">Shutdown</button>
+            </div>
+            <div>
+                <img id="logo" src="/img/arch-linux.svg">
             </div>
         </footer>
         <script type="text/javascript" src="/js/main.js"></script>
