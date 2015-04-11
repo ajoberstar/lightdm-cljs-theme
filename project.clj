@@ -21,6 +21,6 @@
                         :compiler {:output-to "target/resources/public/js/main.js"
                                    :output-dir "target/resources/public/js"
                                    :asset-path "js"
-                                   :main org.ajoberstar.lightdm.dev
+                                   :main org.ajoberstar.dev
                                    :optimizations :none}}]}
   :figwheel {:css-dirs ["resources/public/css"]})

@@ -1,5 +1,5 @@
-(ns org.ajoberstar.lightdm.dev
+(ns org.ajoberstar.dev
   (:require [figwheel.client :as fw]
-            [org.ajoberstar.lightdm.core]))
+            [org.ajoberstar.lightdm]))
 
 (fw/start {:on-jsload (fn [] (print "reloaded"))})
