@@ -10,11 +10,12 @@
 ;; Trianglify background
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn- new-wallpaper []
-  (let [width (aget js/window "innerWidth")
-        height (aget js/window "innerHeight")]
-    (-> #js {:width width :height height}
+  (-> #js {:width     (aget js/window "innerWidth")
+           :height    (aget js/window "innerHeight")
+           :cell_size (-> 100 rand-int (+ 25))
+           :variance  (-> 0.75 rand (+ 0.25))}
       js/Trianglify
-      .png)))
+      .png))
 
 (defn wallpaper-component []
   [:img {:src (new-wallpaper)}])
