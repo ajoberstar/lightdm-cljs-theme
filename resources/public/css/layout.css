@@ -1,12 +1,8 @@
 body { height: 100%; width: 100%; margin: 0; }
 
-header { position: fixed; top: 0; left: 0; right: 0; }
-footer { position: fixed; bottom: 0; left: 0; right: 0; }
-header, footer { padding-left: 0.5em; padding-right: 0.5em; }
-header, footer { display: flex; justify-content: space-between; align-items: center; }
-header, footer, footer img { height: 2em; }
-
-footer img { padding-top: 0.25em; }
+footer { position: fixed; bottom: 0; left: 0; right: 0; height: 2em; }
+footer { padding-left: 0.5em; padding-right: 0.5em; }
+footer { display: flex; justify-content: space-between; align-items: center; }
 
 #container { position: fixed; height: 100%; width: 100%; }
 #container { display: flex; justify-content: center; align-items: center; }

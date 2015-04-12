@@ -36,7 +36,7 @@
             ^{:key key} [:option {:value key} name])
           sessions)]))
 
-(reagent/render [session-component] (js/document.getElementById "sessions"))
+;(reagent/render [session-component] (js/document.getElementById "sessions"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User component

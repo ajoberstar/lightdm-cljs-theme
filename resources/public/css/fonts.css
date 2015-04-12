@@ -34,7 +34,7 @@ body {
     font-size: 1.5em;
 }
 
-select, button {
+button {
     font-family: OpenSans;
     font-weight: 400;
     font-size: .75em;

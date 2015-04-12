@@ -1,5 +1,5 @@
 body { background-size: cover; background-image: url(http://res1.windows.microsoft.com/resbox/en/windows/main/ecbd79ef-344f-49e9-b308-d1954be76947_7.jpg) }
-header, footer { background-color: rgba(43, 43, 43, 0.5); }
+footer { background-color: rgba(43, 43, 43, 0.5); }
 #users { background-color: rgba(237, 237, 237, 0.8); border-radius: 0.125em; }
 
 body { color: rgb(237, 237, 237); }
