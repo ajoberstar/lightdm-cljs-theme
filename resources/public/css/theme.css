@@ -1,107 +1,11 @@
-@font-face {
-    font-family: "OpenSans";
-    src: url(../font/OpenSans-Light.ttf);
-    font-weight: 300;
-}
+body { background-size: cover; background-image: url(http://res1.windows.microsoft.com/resbox/en/windows/main/ecbd79ef-344f-49e9-b308-d1954be76947_7.jpg) }
+header, footer { background-color: rgba(43, 43, 43, 0.5); }
+#users { background-color: rgba(237, 237, 237, 0.8); border-radius: 0.125em; }
 
-@font-face {
-    font-family: "OpenSans";
-    src: url(../font/OpenSans-Regular.ttf);
-    font-weight: 400;
-}
+body { color: rgb(237, 237, 237); }
+#users { color: rgb(43, 43, 43); }
 
-@font-face {
-    font-family: "OpenSans";
-    src: url(../font/OpenSans-SemiBold.ttf);
-    font-weight: 600;
-}
+img.avatar { border-radius: 50%; }
+.user:hover img.avatar { border-radius: 5%; }
 
-@font-face {
-    font-family: "OpenSans";
-    src: url(../font/OpenSans-Bold.ttf);
-    font-weight: 700;
-}
-
-@font-face {
-    font-family: "OpenSans";
-    src: url(../font/OpenSans-ExtraBold.ttf);
-    font-weight: 800;
-}
-
-select, button {
-    font-family: OpenSans;
-    font-weight: 400;
-    font-size: .75em;
-}
-
-body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    background-color: #2b2b2b;
-    color: #ededed;
-    font-family: OpenSans;
-    font-weight: 300;
-    font-size: 1.5em;
-}
-
-header, footer {
-    padding: 0.5em 0.5em 0em 0.5em;
-}
-
-.right {
-    float: right;
-}
-
-#container {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-}
-
-#users {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    text-align: center;
-}
-
-.user {
-    display: inline-block;
-    height: 15%;
-    width: 15%;
-}
-
-.user span {
-    display: block;
-}
-
-.user:hover img.avatar {
-    border-radius: 5%;
-}
-
-img.avatar {
-    position: relative;
-    display: inline-block;
-    width: 75%;
-    height: 75%;
-    border-radius: 50%;
-    border: 0.125em solid #efefef;
-}
-
-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-footer div {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-footer, footer img {
-    height: 3em;
-}
+img.avatar, .user:hover img.avatar { transition: all 0.1s ease-in-out; }

@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href="/css/layout.css">
+        <link rel="stylesheet" type="text/css" href="/css/fonts.css">
         <link rel="stylesheet" type="text/css" href="/css/theme.css">
         <script type="text/javascript" src="/js/mock.js"></script>
     </head>
     <body>
         <header>
-            <div id="time" class="right">Time</div>
             <div id="sessions"></div>
+            <div id="time">Time</div>
         </header>
         <div id="container"></div>
         <footer>
-            <div class="right">
-                <button onclick="lightdm.restart()">Restart</button>
-                <button onclick="lightdm.shutdown()">Shutdown</button>
-            </div>
             <div>
                 <img id="logo" src="/img/arch-linux.svg">
+            </div>
+            <div>
+                <button onclick="lightdm.restart()">Restart</button>
+                <button onclick="lightdm.shutdown()">Shutdown</button>
             </div>
         </footer>
         <script type="text/javascript" src="/js/main.js"></script>
