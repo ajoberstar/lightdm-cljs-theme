@@ -7,6 +7,21 @@
 (enable-console-print!)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Trianglify background
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- new-wallpaper []
+  (let [width (aget js/window "innerWidth")
+        height (aget js/window "innerHeight")]
+    (-> #js {:width width :height height}
+      js/Trianglify
+      .png)))
+
+(defn wallpaper-component []
+  [:img {:src (new-wallpaper)}])
+
+(reagent/render [wallpaper-component] (js/document.getElementById "wallpaper"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Clock component
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def clock-format (format/formatter "yyyy-MM-dd hh:mm:ss A"))
