@@ -2,7 +2,7 @@ body { background-size: cover; background-image: url(http://res1.windows.microso
 footer { background-color: rgba(43, 43, 43, 0.5); }
 #users { background-color: rgba(237, 237, 237, 0.8); border-radius: 0.125em; }
 
-body { color: rgb(237, 237, 237); }
+footer, button { color: rgb(237, 237, 237); }
 #users { color: rgb(43, 43, 43); }
 
 #users, img.avatar { box-shadow: 0 0 0.1em rgb(43, 43, 43); }
@@ -11,3 +11,6 @@ img.avatar { border-radius: 50%; }
 .user:hover img.avatar { border-radius: 5%; }
 
 img.avatar, .user:hover img.avatar { transition: all 0.1s ease-in-out; }
+
+button img { height: 1em; }
+button { border: none; outline: none; background-color: transparent; }

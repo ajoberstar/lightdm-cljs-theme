@@ -13,3 +13,6 @@ footer { display: flex; justify-content: space-between; align-items: center; }
 .user { padding: .25em; margin: .25em; }
 
 img.avatar { height: 6em; width: 6em; }
+
+button { display: inline-flex; align-items: center; }
+button img { margin-right: 0.25em;}
