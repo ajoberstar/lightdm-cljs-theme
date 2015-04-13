@@ -14,5 +14,5 @@ footer { display: flex; justify-content: space-between; align-items: center; }
 
 img.avatar { height: 6em; width: 6em; }
 
-button { display: inline-flex; align-items: center; }
+button * { vertical-align: middle;  }
 button img { margin-right: 0.25em;}
