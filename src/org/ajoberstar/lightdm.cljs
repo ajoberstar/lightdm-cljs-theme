@@ -10,10 +10,11 @@
 ;; Trianglify background
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn- new-wallpaper []
-  (-> #js {:width     (aget js/window "innerWidth")
-           :height    (aget js/window "innerHeight")
-           :cell_size (-> 100 rand-int (+ 25))
-           :variance  (-> 0.75 rand (+ 0.25))}
+  (-> {:width     (aget js/window "innerWidth")
+       :height    (aget js/window "innerHeight")
+       :cell_size (-> 100 rand-int (+ 25))
+       :variance  (-> 0.75 rand (+ 0.25))}
+      clj->js
       js/Trianglify
       .png))
 
@@ -46,7 +47,7 @@
 (defn session-component []
   (let [{:keys [active-session sessions]} @sessions-db
         active-key (:key active-session)]
-    [:select
+    [:select {:id "session"}
      {:defaultValue active-key}
      (map (fn [{:keys [key name]}]
             ^{:key key} [:option {:value key} name])
@@ -66,13 +67,24 @@
   (def users-db (reagent/atom {:active-user nil
                                :users (map user-defaults users)})))
 
+(defn- control-login [user]
+  (swap! users-db update
+         :active-user
+         (fn [current-active]
+           (if current-active nil user))))
+
+(defn login-component []
+  [:form
+   [:input {:id "password" :type "text" :placeholder "Password"}]
+   [session-component]])
+
 (defn user-component [{:keys [display_name image name] :as user}]
   ^{:key name} [:div {:class "user"}
                 [:img {:class "avatar"
                        :src image
-                       :on-click #(swap! users-db update :active-user (fn [current-active]
-                                                                        (if current-active nil user)))}]
-                [:span {:class "username"} display_name]])
+                       :on-click #(control-login user)}]
+                [:span {:class "username"} display_name]
+                (if (= user (:active-user @users-db)) [login-component])])
 
 (defn users-component []
   (let [{:keys [active-user users]} @users-db]

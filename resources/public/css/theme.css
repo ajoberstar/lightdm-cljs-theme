@@ -11,4 +11,7 @@ img.avatar, .user:hover img.avatar { transition: all 0.1s ease-in-out; }
 
 button img { height: 1em; }
 button { border: none; outline: none; background-color: transparent; }
-button:hover { box-shadow: 0 0 0.125em rgb(237, 237, 237); }
+button:hover { font-weight: 400; }
+
+select, input { border: none; outline: none; background-color: rgb(237, 237, 237); }
+select, input { border-radius: 0.25em; box-shadow: inset 0.1em 0.1em 0.125em rgb(43, 43, 43); }

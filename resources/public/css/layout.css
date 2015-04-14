@@ -16,3 +16,7 @@ img.avatar { height: 6em; width: 6em; }
 
 button * { vertical-align: middle;  }
 button img { margin-right: 0.25em;}
+
+form { display: flex; flex-direction: column; }
+form * { margin-top: 0.5em; }
+input, select { padding: 0.25em; }
