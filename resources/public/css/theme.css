@@ -11,3 +11,4 @@ img.avatar, .user:hover img.avatar { transition: all 0.1s ease-in-out; }
 
 button img { height: 1em; }
 button { border: none; outline: none; background-color: transparent; }
+button:hover { box-shadow: 0 0 0.125em rgb(237, 237, 237); }
