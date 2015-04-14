@@ -53,8 +53,6 @@
             ^{:key key} [:option {:value key} name])
           sessions)]))
 
-;(reagent/render [session-component] (js/document.getElementById "sessions"))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User component
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -67,22 +65,37 @@
   (def users-db (reagent/atom {:active-user nil
                                :users (map user-defaults users)})))
 
-(defn- control-login [user]
-  (swap! users-db update
-         :active-user
-         (fn [current-active]
-           (if current-active nil user))))
+(defn- login []
+  (let [password (-> (js/document.getElementById "password") .-value)
+        session (-> (js/document.getElementById "session") .-value)]
+    (js/lightdm.provide_secret password)
+    (if js/lightdm.is_authenticated
+      (js/lightdm.login js/lightdm.authentication_user session)
+      (do
+        (aset (js/document.getElementById "password") "value" "")
+        (println "Login failed.")))))
+
+(aset js/window "login" login)
 
 (defn login-component []
-  [:form
-   [:input {:id "password" :type "text" :placeholder "Password"}]
+  [:form {:action "javascript: login()"}
+   [:input {:id "password" :type "password" :placeholder "Password"}]
    [session-component]])
+
+(defn- toggle-login [current-active user]
+  (if current-active
+    (do
+      (js/lightdm.cancel_authentication)
+      nil)
+    (do
+      (js/lightdm.start_authentication (:name user))
+      user)))
 
 (defn user-component [{:keys [display_name image name] :as user}]
   ^{:key name} [:div {:class "user"}
                 [:img {:class "avatar"
                        :src image
-                       :on-click #(control-login user)}]
+                       :on-click #(swap! users-db update :active-user toggle-login user)}]
                 [:span {:class "username"} display_name]
                 (if (= user (:active-user @users-db)) [login-component])])
 
@@ -91,6 +104,14 @@
     [:div {:id "users"}
      (if active-user
        [user-component active-user]
-       (map user-component users))]))
+       (doall (map user-component users)))]))
 
 (reagent/render [users-component] (js/document.getElementById "container"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Login stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; callback needed by lightdm, we don't use it
+(aset js/window "show_prompt" identity)
+(aset js/window "authentication_complete" identity)
