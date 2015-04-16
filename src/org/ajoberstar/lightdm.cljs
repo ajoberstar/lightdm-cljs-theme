@@ -1,4 +1,5 @@
 (ns org.ajoberstar.lightdm
+  (:require-macros [reagent.ratom :as reagent])
   (:require [reagent.core :as reagent]
             [re-frame.core :as reframe]
             [cljs-time.local :as time]
@@ -7,21 +8,66 @@
 (enable-console-print!)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Trianglify background
+;; App DB
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn- new-wallpaper []
-  (-> {:width     (aget js/window "innerWidth")
-       :height    (aget js/window "innerHeight")
-       :cell_size (-> 100 rand-int (+ 25))
-       :variance  (-> 0.75 rand (+ 0.25))}
-      clj->js
-      js/Trianglify
-      .png))
+(reframe/register-sub
+  :active-login
+  (fn [db [_]]
+    (reagent/reaction (:active-user @db))))
 
-(defn wallpaper-component []
-  [:img {:src (new-wallpaper)}])
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Event handling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(reframe/register-handler
+  :begin-login
+  (fn [db [_ user]]
+    (js/lightdm.start_authentication (:name user))
+    (assoc db :active-user user)))
 
-(reagent/render [wallpaper-component] (js/document.getElementById "wallpaper"))
+(reframe/register-handler
+  :cancel-login
+  (fn [db [_]]
+    (js/lightdm.cancel_authentication)
+    (dissoc db :active-user)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LightDM Helpers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn get-lightdm [key]
+  (-> (aget js/lightdm key)
+      (js->clj :keywordize-keys true)))
+
+;; callbacks that LightDM needs, but we don't use
+(aset js/window "show_prompt" identity)
+(aset js/window "authentication_complete" identity)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Trianglify images
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn trianglify [opts]
+  (-> opts clj->js js/Trianglify .png))
+
+(defn wallpaper []
+  (letfn [(to-url [image] (str "url(" image ")"))]
+    (-> {:width (aget js/window "innerWidth")
+         :height (aget js/window "innerHeight")
+         :cell_size (-> 75 rand-int (+ 50))
+         :variance (-> 0.50 rand (+ 0.50))}
+        trianglify
+        to-url)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Power components
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn power-component []
+  [:div {:id "power"}
+   [:button {:on-click #(js/lightdm.restart)}
+    [:img {:src "/img/restart.svg"}]
+    [:span "Restart"]]
+   [:button {:on-click #(js/lightdm.shutdown)}
+    [:img {:src "/img/shutdown.svg"}]
+    [:span "Shutdown"]]])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Clock component
@@ -32,86 +78,57 @@
   (let [clock (reagent/atom (time/local-now))]
     (fn []
       (js/setTimeout #(reset! clock (time/local-now)) 1000)
-      [:span (format/unparse clock-format @clock)])))
-
-(reagent/render [clock-component] (js/document.getElementById "time"))
+      [:div {:id "time"} (format/unparse clock-format @clock)])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Session component
+;; User components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(let [sessions (-> (. js/lightdm -sessions) (js->clj :keywordize-keys true))
-      active (-> (. js/lightdm -default-session) (js->clj :keywordize-keys true))]
-  (def sessions-db (reagent/atom {:active-session active
-                                  :sessions sessions})))
-
 (defn session-component []
-  (let [{:keys [active-session sessions]} @sessions-db
-        active-key (:key active-session)]
-    [:select {:id "session"}
-     {:defaultValue active-key}
+  (let [sessions (get-lightdm "sessions")
+        default (-> "default_session" get-lightdm :key)]
+    [:select {:id "session" :defaultValue default}
      (map (fn [{:keys [key name]}]
             ^{:key key} [:option {:value key} name])
           sessions)]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; User component
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn- user-defaults [user]
-  (if (seq (:image user))
-    user
-    (assoc user :image "/img/unknown.svg")))
-
-(let [users (-> (. js/lightdm -users) (js->clj :keywordize-keys true))]
-  (def users-db (reagent/atom {:active-user nil
-                               :users (map user-defaults users)})))
-
-(defn- login []
-  (let [password (-> (js/document.getElementById "password") .-value)
-        session (-> (js/document.getElementById "session") .-value)]
-    (js/lightdm.provide_secret password)
-    (if js/lightdm.is_authenticated
-      (js/lightdm.login js/lightdm.authentication_user session)
-      (do
-        (aset (js/document.getElementById "password") "value" "")
-        (println "Login failed.")))))
-
-(aset js/window "login" login)
-
 (defn login-component []
-  [:form {:action "javascript: login()"}
-   [:input {:id "password" :type "password" :placeholder "Password"}]
-   [session-component]])
+  [:div {:id "login"}
+   [:form {:action "javascript: login()"}
+    [:input {:id "password" :type "password" :placeholder "Password"}]
+    [session-component]]])
 
-(defn- toggle-login [current-active user]
-  (if current-active
-    (do
-      (js/lightdm.cancel_authentication)
-      nil)
-    (do
-      (js/lightdm.start_authentication (:name user))
-      user)))
+(defn user-component [click]
+  (fn [{:keys [display_name image name] :as user}]
+    ^{:key name} [:div {:class "user"}
+                  [:img {:class "avatar"
+                         :src image
+                         :on-click #(reframe/dispatch [click user])}]
+                  [:span {:class "username"} display_name]]))
 
-(defn user-component [{:keys [display_name image name] :as user}]
-  ^{:key name} [:div {:class "user"}
-                [:img {:class "avatar"
-                       :src image
-                       :on-click #(swap! users-db update :active-user toggle-login user)}]
-                [:span {:class "username"} display_name]
-                (if (= user (:active-user @users-db)) [login-component])])
+(defn user-defaults [user]
+  (let [avatar-opts {:width 250 :height 250 :seed (:name user)}]
+    (update user :image (fn [image]
+                          (if (seq image)
+                            image
+                            (trianglify avatar-opts))))))
 
 (defn users-component []
-  (let [{:keys [active-user users]} @users-db]
-    [:div {:id "users"}
-     (if active-user
-       [user-component active-user]
-       (doall (map user-component users)))]))
-
-(reagent/render [users-component] (js/document.getElementById "container"))
+  (let [users (->> "users" get-lightdm (map user-defaults))
+        active (reframe/subscribe [:active-login])]
+    (fn []
+      [:div {:id "users"}
+       (if-let [active-user @active]
+         [:div [(user-component :cancel-login) active-user] [login-component]]
+         (map (user-component :begin-login) users))])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Login stuff
+;; Body component
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn body-component []
+  [:div {:id "container" :style {:background-image (wallpaper)}}
+   [users-component]
+   [:footer
+    [power-component]
+    [clock-component]]])
 
-;; callback needed by lightdm, we don't use it
-(aset js/window "show_prompt" identity)
-(aset js/window "authentication_complete" identity)
+(reagent/render [body-component] (.-body js/document))
