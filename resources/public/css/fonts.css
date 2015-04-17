@@ -32,3 +32,4 @@ body, button, select, input { font-family: OpenSans; font-weight: 300; }
 body { font-size: 1.5em; }
 button { font-size: 1em; }
 select, input { font-size: 0.75em; font-weight: 400; }
+#flash { font-size: 0.75em; color: red; text-align: center; }

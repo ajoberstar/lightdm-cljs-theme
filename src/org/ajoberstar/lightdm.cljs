@@ -7,6 +7,8 @@
 
 (enable-console-print!)
 
+(declare get-lightdm)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; App DB
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,20 +17,42 @@
   (fn [db [_]]
     (reagent/reaction (:active-user @db))))
 
+(reframe/register-sub
+  :flash-query
+  (fn [db [_]]
+    (reagent/reaction (:flash-msg @db))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Event handling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (reframe/register-handler
   :begin-login
   (fn [db [_ user]]
-    (js/lightdm.start_authentication (:name user))
     (assoc db :active-user user)))
 
 (reframe/register-handler
   :cancel-login
   (fn [db [_]]
-    (js/lightdm.cancel_authentication)
-    (dissoc db :active-user)))
+    (-> db
+        (dissoc :active-user)
+        (dissoc :flash-msg))))
+
+(reframe/register-handler
+  :login
+  (fn [db [_ user]]
+    (let [password (js/document.getElementById "password")
+          session (js/document.getElementById "session")]
+      (js/lightdm.start_authentication (:name user))
+      (js/lightdm.provide_secret (aget password "value"))
+      (if (get-lightdm "is_authenticated")
+        (do
+          (js/lightdm.login
+            (get-lightdm "authentication_user")
+            (aget session "value"))
+          (assoc db :flash-msg "Successful login"))
+        (do
+          (aset password "value" "")
+          (assoc db :flash-msg "Incorrect password"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LightDM Helpers
@@ -83,6 +107,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn flash-component []
+  (let [flash (reframe/subscribe [:flash-query])]
+    (fn []
+      [:div {:id "flash"} @flash])))
+
 (defn session-component []
   (let [sessions (get-lightdm "sessions")
         default (-> "default_session" get-lightdm :key)]
@@ -91,9 +120,12 @@
             ^{:key key} [:option {:value key} name])
           sessions)]))
 
-(defn login-component []
+(defn login-component [user]
   [:div {:id "login"}
-   [:form {:action "javascript: login()"}
+   [flash-component]
+   [:form {:on-submit #(do
+                         (reframe/dispatch [:login user])
+                         false)}
     [:input {:id "password" :type "password" :placeholder "Password"}]
     [session-component]]])
 
@@ -118,7 +150,9 @@
     (fn []
       [:div {:id "users"}
        (if-let [active-user @active]
-         [:div [(user-component :cancel-login) active-user] [login-component]]
+         [:div
+          [(user-component :cancel-login) active-user]
+          [login-component active-user]]
          (map (user-component :begin-login) users))])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
