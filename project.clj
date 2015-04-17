@@ -14,6 +14,7 @@
                  [figwheel "0.2.5"]]
   :resource-paths ["resources" "target/resources"]
   :target-path "target/%s"
+  :hooks [leiningen.cljsbuild]
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-figwheel "0.2.5"]]
   :cljsbuild {:builds [{:id "development"
@@ -22,5 +23,10 @@
                                    :output-dir "target/resources/public/js"
                                    :asset-path "js"
                                    :main org.ajoberstar.dev
-                                   :optimizations :none}}]}
+                                   :optimizations :none}}
+                       {:id "production"
+                        :source-paths ["src"]
+                        :compiler {:output-to "target/resources/public/js/main.js"
+                                   :optimizations :advanced
+                                   :pretty-print false}}]}
   :figwheel {:css-dirs ["resources/public/css"]})
