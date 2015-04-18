@@ -1,8 +1,8 @@
 (defproject lightdm-cljs-theme "0.1.0-SNAPSHOT"
   :description "LightDM Webkit theme written in CLJS."
   :url "https://github.com/ajoberstar/lightdm-cljs-theme"
-  :license {:name "Apache License, Version 2.0"
-            :url "http://www.apache.org/licenses/LICENSE-2.0"}
+  :license {:name "none"
+            :url "none"}
   :min-lein-version "2.5.0"
   :dependencies [[org.clojure/clojure "1.7.0-beta1"]
 
