@@ -27,6 +27,6 @@
                        {:id "production"
                         :source-paths ["src"]
                         :compiler {:output-to "target/resources/public/js/main.js"
-                                   :optimizations :advanced
+                                   :optimizations :simple
                                    :pretty-print false}}]}
   :figwheel {:css-dirs ["resources/public/css"]})
