@@ -1,5 +1,5 @@
 [theme]
 name=lightdm-webkit-cljs
 description=A ClojureScript-based theme
-engine=lightdm-webkit-greeter
+engine=lightdm-webkit2-greeter
 url=index.html

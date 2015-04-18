@@ -1,13 +1,13 @@
 # Maintainer: ajoberstar <ajoberstar at gmail dot com>
 
 pkgname=lightdm-webkit-theme-cljs-git
-pkgver=0.0.0_36_g9144b56
+pkgver=0.0.0.rc.1.2.gf115804
 pkgrel=1
 pkgdesc='LightDM Webkit theme written in ClojureScript.'
 arch=(any)
 url='https://github.com/ajoberstar/lightdm-cljs-theme'
 license=('GPL3')
-depends=('lightdm-webkit-greeter')
+depends=('lightdm-webkit2-greeter')
 makedepends=('git' 'java-environment' 'leiningen')
 provides=('lightdm-webkit-theme-cljs')
 source=('git://github.com/ajoberstar/lightdm-cljs-theme.git')
