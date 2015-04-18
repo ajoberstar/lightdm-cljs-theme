@@ -13,12 +13,13 @@
 ;; App DB
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (reframe/register-sub
-  :active-login
+  :active-auth
   (fn [db [_]]
-    (reagent/reaction (:active-user @db))))
+    (reagent/reaction {:user (:active-user @db)
+                       :ready (:show-prompt @db)})))
 
 (reframe/register-sub
-  :flash-query
+  :current-flash
   (fn [db [_]]
     (reagent/reaction (:flash-msg @db))))
 
@@ -26,33 +27,51 @@
 ;; Event handling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (reframe/register-handler
-  :begin-login
+  :auth-begin
   (fn [db [_ user]]
+    (println "Auth begin")
+    (js/lightdm.start_authentication (:name user))
     (assoc db :active-user user)))
 
 (reframe/register-handler
-  :cancel-login
+  :auth-prompt
   (fn [db [_]]
+    (println "Auth prompt")
+    (assoc db :show-prompt true)))
+
+(reframe/register-handler
+  :auth-cancel
+  (fn [db [_]]
+    (println "Auth cancel")
+    (js/lightdm.cancel_authentication)
     (-> db
         (dissoc :active-user)
+        (dissoc :show-prompt)
         (dissoc :flash-msg))))
 
 (reframe/register-handler
-  :login
+  :auth-do
   (fn [db [_ user]]
+    (println "Auth do")
     (let [password (js/document.getElementById "password")
           session (js/document.getElementById "session")]
-      (js/lightdm.start_authentication (:name user))
       (js/lightdm.provide_secret (aget password "value"))
-      (if (get-lightdm "is_authenticated")
-        (do
-          (js/lightdm.login
-            (get-lightdm "authentication_user")
-            (aget session "value"))
-          (assoc db :flash-msg "Successful login"))
-        (do
-          (aset password "value" "")
-          (assoc db :flash-msg "Incorrect password"))))))
+      db)))
+
+(reframe/register-handler
+  :auth-complete
+  (fn [db [_]]
+    (println "Auth complete")
+    (if (get-lightdm "is_authenticated")
+      (do
+        (js/lightdm.login
+          (get-lightdm "authentication_user")
+          (aget (js/document.getElementById "session") "value"))
+        (assoc db :flash-msg "Login succeeded"))
+      (do
+        (aset (js/document.getElementById "password") "value" "")
+        (reframe/dispatch [:auth-begin (:active-user db)])
+        (assoc db :flash-msg "Login failed")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LightDM Helpers
@@ -62,9 +81,8 @@
   (-> (aget js/lightdm key)
       (js->clj :keywordize-keys true)))
 
-;; callbacks that LightDM needs, but we don't use
-(aset js/window "show_prompt" identity)
-(aset js/window "authentication_complete" identity)
+(aset js/window "show_prompt" #(reframe/dispatch [:auth-prompt]))
+(aset js/window "authentication_complete" #(reframe/dispatch [:auth-complete]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Trianglify images
@@ -108,7 +126,7 @@
 ;; User components
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn flash-component []
-  (let [flash (reframe/subscribe [:flash-query])]
+  (let [flash (reframe/subscribe [:current-flash])]
     (fn []
       [:div {:id "flash"} @flash])))
 
@@ -124,7 +142,7 @@
   [:div {:id "login"}
    [flash-component]
    [:form {:on-submit #(do
-                         (reframe/dispatch [:login user])
+                         (reframe/dispatch [:auth-do user])
                          false)}
     [:input {:id "password" :type "password" :placeholder "Password"}]
     [session-component]]])
@@ -146,14 +164,14 @@
 
 (defn users-component []
   (let [users (->> "users" get-lightdm (map user-defaults))
-        active (reframe/subscribe [:active-login])]
+        auth (reframe/subscribe [:active-auth])]
     (fn []
       [:div {:id "users"}
-       (if-let [active-user @active]
+       (if (:ready @auth)
          [:div
-          [(user-component :cancel-login) active-user]
-          [login-component active-user]]
-         (map (user-component :begin-login) users))])))
+          [(user-component :auth-cancel) (:user @auth)]
+          [login-component (:user @auth)]]
+         (map (user-component :auth-begin) users))])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Body component
