@@ -87,10 +87,10 @@
 (defn power-component []
   [:div {:id "power"}
    [:button {:on-click #(js/lightdm.restart)}
-    [:img {:src "/img/restart.svg"}]
+    [:img {:src "img/restart.svg"}]
     [:span "Restart"]]
    [:button {:on-click #(js/lightdm.shutdown)}
-    [:img {:src "/img/shutdown.svg"}]
+    [:img {:src "img/shutdown.svg"}]
     [:span "Shutdown"]]])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
